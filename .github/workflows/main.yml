@@ -1,0 +1,42 @@
+
+name: Build LogMergeTool NoExcel
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Verify source files
+        shell: cmd
+        run: |
+          dir
+          if not exist LogMergeTool_NoExcel_Main.py exit /b 1
+          if not exist csa_error_rules.json exit /b 1
+          if not exist site_serial_map.json exit /b 1
+
+      - name: Run Build BAT
+        shell: cmd
+        run: Build_EXE_Windows11_Python313_Nuitka_NO_EXCEL_FINAL.bat
+
+      - name: Verify EXE
+        shell: cmd
+        run: |
+          dir dist
+          if not exist dist\LogMergeTool_NoExcel.exe exit /b 1
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: LogMergeTool_NoExcel
+          path: dist/LogMergeTool_NoExcel.exe
